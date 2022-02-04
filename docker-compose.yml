@@ -1,0 +1,21 @@
+version: '3.9'
+volumes:
+  php-fpm-socket:
+  db-store:
+services:
+  # phpmyadminを追加する
+  app:
+    build:
+      context: .
+      dockerfile: ./infra/docker/php/Dockerfile
+    volumes:
+      - type: volumes
+        source: php-fpm-socket
+        target: /var/run/php-fpm
+        volume:
+          nocopy: true
+      - type: bind
+        source: ./backend
+        target: /work/backend
+    environment:
+      -
