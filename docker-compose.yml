@@ -59,3 +59,26 @@ services:
           nocopy: true
       - type: bind
         source: ./vackend
+
+  db:
+    build:
+      context: .
+      dockerfile: ./infra/docker/mysql/Dockerfile
+    ports:
+      - target: 3306
+        published: ${DB_PORT:-3306}
+        protocol: tcp
+        mode: host
+    volumes:
+      - type: volume
+        source: db-store
+        target: /var/lib/mysql
+        volume:
+          nocopy: true
+    environment:
+      - MYSQL_DATABASE=${DB_NAME:-laravel_local}
+      - MYSQL_USER=${DB_USER:-soregashi27}
+      - MYSQL_PASSWORD=${DB_PASS:-soregashidegozaru}
+      - MYSQL_ROOT_PASSWORD=${DB_PASS:-soregashidegozaru}
+# TODO: root userで起動しないようにする設定を追加する
+# TODO: 他のファイルを作る前にAWS内のinstanceを削除する
