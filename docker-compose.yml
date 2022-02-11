@@ -2,8 +2,20 @@ version: '3.9'
 volumes:
   php-fpm-socket:
   db-store:
+  psysh-store:
+  pma-session-store:
 services:
-  # phpmyadminを追加する
+  pma:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_HOST=db
+      - PMA_USER=soregashi27
+      - PMA_PASSWORD=soregashidegozaru
+    ports:
+      - 8080:80
+    volumes:
+      - pma-session-store:/sessions
+
   app:
     build:
       context: .
