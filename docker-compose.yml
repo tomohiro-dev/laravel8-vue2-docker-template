@@ -41,6 +41,9 @@ services:
       - DB_DATABASE=${DB_NSME:-laravel_local}
       - DB_USERNAME=${DB_USER:-soregashi27}
       - DB_PASSWORD=${DB_PASS:-soregashidegozaru}
+      # - DB_DATABASE=${DB_NAME}
+      # - DB_USERNAME=${DB_USER}
+      # - DB_PASSWORD=${DB_PASS}
 
   web:
     build:
