@@ -61,7 +61,7 @@ services:
         volume:
           nocopy: true
       - type: bind
-        source: ./vackend
+        source: ./backend
 
   db:
     build:
