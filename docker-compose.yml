@@ -2,8 +2,20 @@ version: '3.9'
 volumes:
   php-fpm-socket:
   db-store:
+  psysh-store:
+  pma-session-store:
 services:
-  # phpmyadminを追加する
+  pma:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_HOST=db
+      - PMA_USER=soregashi27
+      - PMA_PASSWORD=soregashidegozaru
+    ports:
+      - 8080:80
+    volumes:
+      - pma-session-store:/sessions
+
   app:
     build:
       context: .
@@ -17,5 +29,59 @@ services:
       - type: bind
         source: ./backend
         target: /work/backend
+      - type: volume
+        source: psysh-store
+        target: /root/.config/psysh
+        volume:
+          nocopy: true
     environment:
-      -
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=${DB_NSME:-laravel_local}
+      - DB_USERNAME=${DB_USER:-soregashi27}
+      - DB_PASSWORD=${DB_PASS:-soregashidegozaru}
+      # - DB_DATABASE=${DB_NAME}
+      # - DB_USERNAME=${DB_USER}
+      # - DB_PASSWORD=${DB_PASS}
+
+  web:
+    build:
+      context: .
+      dockerfile: ./infra/docker/nginx/Dockerfile
+    ports:
+      - target: 80
+        published: ${ WEB_PORT:-80}
+        protocol: tcp
+        mode: host
+    volumes:
+      - type: bind
+        source: php-fpm-socket
+        target: /vat/run/php-fpm
+        volume:
+          nocopy: true
+      - type: bind
+        source: ./backend
+
+  db:
+    build:
+      context: .
+      dockerfile: ./infra/docker/mysql/Dockerfile
+    ports:
+      - target: 3306
+        published: ${DB_PORT:-3306}
+        protocol: tcp
+        mode: host
+    volumes:
+      - type: volume
+        source: db-store
+        target: /var/lib/mysql
+        volume:
+          nocopy: true
+    environment:
+      - MYSQL_DATABASE=${DB_NAME:-laravel_local}
+      - MYSQL_USER=${DB_USER:-soregashi27}
+      - MYSQL_PASSWORD=${DB_PASS:-soregashidegozaru}
+      - MYSQL_ROOT_PASSWORD=${DB_PASS:-soregashidegozaru}
+# TODO: root userで起動しないようにする設定を追加する
+# TODO: 他のファイルを作る前にAWS内のinstanceを削除する
