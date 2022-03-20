@@ -24,3 +24,5 @@ RUN apt-get update && \
     
 COPY ./infra/docker/php-fpm.d/zzz-www.conf /usr/local/etc/php-fpm.d/zzz-www.conf
 COPY ./infra/docker/php/php.ini /usr/local/etc/php/php.ini
+
+WORKDIR /work/backend
